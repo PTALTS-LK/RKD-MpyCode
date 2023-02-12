@@ -35,17 +35,22 @@ keydict = {'`':0x35,'1':0x1e,'2':0x1f,'3':0x20,'4':21,'5':0x22,'6':0x23,'7':0x24
            'ESC':0x3a,'F1':0x3a,'F2':0x3b,'F3':0x3c,'F4':0x3d,'F5':0x3e,'F6':0x3f,'F7':0x40,'F8':0x41,'F9':0x42,'F10':0x43,'F11':0x44,'F12':0x45,'PrintScreen':0x46,'ScrollLock':0x47,'Pause':0x48,
            'NumLock':0x53,'n1':0x59,'n2':0x5a,'n3':0x5b,'n4':0x5c,'n5':0x5d,'n6':0x5e,'n7':0x5f,'n8':0x60,'n9':0x61,'n0':0x62,'n/':0x54,'n*':0x55,'n-':0x56,'n+':0x57,'nEnter':0x58,'n.':0x63}
 
+def write_defconf():
+    file=open('config.json',mode='w+')
+    raw='{\n"k1": "D",\n"k2": "F",\n"k3": "J",\n"k4": "K",\n"k5": "V",\n"k6": "N",\n"ST": "Space",\n"SR1L": "W",\n"SR1R": "E",\n"SR2L": "O",\n"SR2R": "P"\n}'
+    file.seek(0)
+    file.write(raw)
+    file.flush()
+    file.close()
+    return {'k1': 7,'k2': 9,'k3': 13,'k4': 14,'k5': 25,'k6': 17,'ST': 44,'SR1L': 26,'SR1R': 8,'SR2L': 18,'SR2R': 19}
+
 def load_config():
     try:
         file=open('config.json',mode='r')
+    except ValueError:
+        return write_defconf()
     except OSError:
-        file=open('config.json',mode='w+')
-        raw={"k1": "D","k2": "F","k3": "J","k4": "K","k5": "V","k6": "N","ST": "Space","SR1L": "W","SR1R": "E","SR2L": "O","SR2R": "P"}
-        file.seek(0)
-        file.write(json.dumps(raw, sort_keys=True, indent=4))
-        file.flush()
-        file.close()
-        return {'k1': 7,'k2': 9,'k3': 13,'k4': 14,'k5': 25,'k6': 17,'ST': 44,'SR1L': 26,'SR1R': 8,'SR2L': 18,'SR2R': 19}
+        return write_defconf()
     else:
         data=json.load(file)
         for i in data :
@@ -58,3 +63,4 @@ def key():
     file=open('config.json',mode='r')
     j=json.load(file)
     return [j['k1'],j['k2'],j['k3'],j['k4'],j['k5'],j['k6']]
+
