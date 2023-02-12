@@ -97,11 +97,11 @@ while True :
                 Knm.append(KD[q])
 
     if RTv[0] != 1 :
-        if RTv[0] == 2 :
+        if RTv[0] == 0 :
             RL = keys['SR1L']
             R1ms = time.ticks_ms()
             SR1.set(value=1)
-        elif RTv[0] == 0 :
+        elif RTv[0] == 2 :
             RL = keys['SR1R']
             R1ms = time.ticks_ms()
             SR1.set(value=1)
@@ -111,11 +111,11 @@ while True :
             Knm.append(RL)
         
     if RTv[1] != 1 :
-        if RTv[1] == 2 :
+        if RTv[1] == 0 :
             RR = keys['SR2L']
             R2ms = time.ticks_ms()
             SR2.set(value=1)
-        elif RTv[1] == 0 :
+        elif RTv[1] == 2 :
             RR = keys['SR2R']
             R2ms = time.ticks_ms()
             SR2.set(value=1)
@@ -145,3 +145,4 @@ while True :
         l.off()
     
     Knm = []
+
