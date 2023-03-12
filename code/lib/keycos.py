@@ -1,6 +1,7 @@
 '''
 RKD-MpyCode
 Copyright (C) 2023 PCX-LK
+https://github.com/PCX-LK/RKD-MpyCode
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -66,16 +67,16 @@ def Keycos() :
                     else:
                         uart.write(b'\x57\xab\x00\x02\x08\x00\x00\x00\x00\x00\x00\x00\x00\x0c')
                         break
-                    l.on()
-                    uart.write(binascii.unhexlify(b'57ab0002080000'+'{:02X}{:02X}{:02X}{:02X}{:02X}{:02X}'.format(data[1],data[2],data[3],data[4],data[5],data[6])+'{:02X}'.format((0x57+0xab+0x02+0x08+data[1]+data[2]+data[3]+data[4]+data[5]+data[6])&0xff)))
-                    if time.ticks_diff(time.ticks_ms(), senms) > 10:
-                        l.off()
-                        lt = time.ticks_ms()
                     while True :
                         if MODE.value() == 1:
                             break
                         if time.ticks_ms() >= Time:
                             break
+                    l.on()
+                    uart.write(binascii.unhexlify(b'57ab0002080000'+'{:02X}{:02X}{:02X}{:02X}{:02X}{:02X}'.format(data[1],data[2],data[3],data[4],data[5],data[6])+'{:02X}'.format((0x57+0xab+0x02+0x08+data[1]+data[2]+data[3]+data[4]+data[5]+data[6])&0xff)))
+                    if time.ticks_diff(time.ticks_ms(), senms) > 10:
+                        l.off()
+                        lt = time.ticks_ms()
                     if MODE.value() == 1:
                         uart.write(b'\x57\xab\x00\x02\x08\x00\x00\x00\x00\x00\x00\x00\x00\x0c')
                         break

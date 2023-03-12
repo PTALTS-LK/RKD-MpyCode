@@ -1,6 +1,7 @@
 '''
 RKD-MpyCode
 Copyright (C) 2023 PCX-LK
+https://github.com/PCX-LK/RKD-MpyCode
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -25,6 +26,36 @@ sw4 = Pin(12, Pin.IN, Pin.PULL_UP)
 sw5 = Pin(14, Pin.IN, Pin.PULL_UP)
 sw6 = Pin(15, Pin.IN, Pin.PULL_UP)
 
+DefConfig="""
+{
+"k1": "D",
+"k2": "F",
+"k3": "J",
+"k4": "K",
+"k5": "V",
+"k6": "N",
+"ST": "Space",
+"SR1L": "W",
+"SR1R": "E",
+"SR2L": "O",
+"SR2R": "P",
+"N1": "n1",
+"N2": "n2",
+"N3": "n3",
+"N4": "n4",
+"N5": "n5",
+"N6": "n6",
+"N7": "n7",
+"N8": "n8",
+"N9": "n9",
+"Na": "n0",
+"Nb": "nEnter",
+"Nc": "n.",
+"Nd": "NumLock"
+}
+
+"""
+
 keydict = {'`':0x35,'1':0x1e,'2':0x1f,'3':0x20,'4':21,'5':0x22,'6':0x23,'7':0x24,'8':0x25,'9':0x26,'0':0x27,'-':0x2d,'=':0x2e,'BackSpace':0x2a,
            'Tab':0x2b,'Q':0x14,'W':0x1a,'E':0x08,'R':0x15,'T':0x17,'Y':0x1c,'U':0x18,'I':0x0c,'O':0x12,'P':0x13,'[':0x2f,']':0x30,'\\':0x31,
            'CapsLock':0x39,'A':0x04,'S':0x16,'D':0x07,'F':0x09,'G':0x0a,'H':0x0b,'J':0x0d,'K':0x0e,'L':0x0f,';':0x33,'\'':0x34,'Enter':0x58,
@@ -37,7 +68,7 @@ keydict = {'`':0x35,'1':0x1e,'2':0x1f,'3':0x20,'4':21,'5':0x22,'6':0x23,'7':0x24
 
 def write_defconf():
     file=open('config.json',mode='w+')
-    raw='{\n"k1": "D",\n"k2": "F",\n"k3": "J",\n"k4": "K",\n"k5": "V",\n"k6": "N",\n"ST": "Space",\n"SR1L": "W",\n"SR1R": "E",\n"SR2L": "O",\n"SR2R": "P"\n}'
+    raw=DefConfig
     file.seek(0)
     file.write(raw)
     file.flush()
@@ -63,4 +94,3 @@ def key():
     file=open('config.json',mode='r')
     j=json.load(file)
     return [j['k1'],j['k2'],j['k3'],j['k4'],j['k5'],j['k6']]
-

@@ -1,6 +1,7 @@
 '''
 RKD-MpyCode
 Copyright (C) 2023 PCX-LK
+https://github.com/PCX-LK/RKD-MpyCode
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
