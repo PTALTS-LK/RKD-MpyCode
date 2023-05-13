@@ -16,7 +16,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from machine import Pin,UART
-import json
+import json,time
 
 stats = Pin(2, Pin.OUT)#设置引脚
 sw1 = Pin(9, Pin.IN, Pin.PULL_UP)
@@ -27,8 +27,7 @@ sw5 = Pin(14, Pin.IN, Pin.PULL_UP)
 sw6 = Pin(15, Pin.IN, Pin.PULL_UP)
 
 #默认键位配置
-DefConfig="""
-{
+DefConfig="""{
 "k1": ["D"],
 "k2": ["F"],
 "k3": ["J"],
@@ -40,9 +39,7 @@ DefConfig="""
 "SR1R": ["E"],
 "SR2L": ["O"],
 "SR2R": ["P"]
-}
-
-"""
+}"""
 
 def key_dict():#键值转换字典
     return {'`':0x35,'1':0x1e,'2':0x1f,'3':0x20,'4':21,'5':0x22,'6':0x23,'7':0x24,'8':0x25,'9':0x26,'0':0x27,'-':0x2d,'=':0x2e,'BackSpace':0x2a,
@@ -81,21 +78,24 @@ def load_config():#从config.json加载键位配置
         return data
     
 def setup():#CH9329初始化
-    uart = UART(0, baudrate=9600, tx=Pin(0), rx=Pin(1))
-    uart.write(b'\x57\xab\x00\x08\x00\x0a')
-    if uart.any() != 0:
-        time.sleep_ms(10)
-        data = uart.read()
+    suart = UART(0, baudrate=9600, tx=Pin(0), rx=Pin(1))
+    suart.write(b'\x57\xab\x00\x08\x00\x0a')
+    time.sleep_ms(10)
+    if suart.any() != 0:
+        data = suart.read()
         chk = 0
         out = b''
         sent = b''
-        out = data[0:3]+b'\x09'+data[4:8]+b'\x00\x00\xe1\x00'+data[12:55]
+        out = bytes(data[0:3])+b'\x09'+bytes(data[4:8])+b'\x00\x00\xe1\x00'+bytes(data[12:55])
         for i in out:
             chk = chk + i
-        print(chk)
         sent = out+bytes([chk&0xff])
-        uart.write(sent)
-        uart.write(b'\x57\xab\x00\x0b\x10\x00\x0ePCX-LK_Creates\x00')
-        uart.write(b'\x57\xab\x00\x0b\x05\x01\x03RKD\xf7')
-        uart.write(b'\x57\xab\x00\x0f\x00\x11')
-    uart = UART(0, baudrate=57600, tx=Pin(0), rx=Pin(1))
+        suart.write(sent)
+        time.sleep_ms(10)
+        suart.write(b'\x57\xab\x00\x0b\x10\x00\x0ePCX-LK_Creates\x00')
+        time.sleep_ms(10)
+        suart.write(b'\x57\xab\x00\x0b\x05\x01\x03RKD\xf7')
+        time.sleep_ms(10)
+        suart.write(b'\x57\xab\x00\x0f\x00\x11')
+        time.sleep_ms(10)
+    del suart

@@ -22,7 +22,7 @@ F1 = Pin(6, Pin.IN, Pin.PULL_UP)#设置DIP开关引脚
 F2 = Pin(7, Pin.IN, Pin.PULL_UP)
 F3 = Pin(8, Pin.IN, Pin.PULL_UP)
 
-from keycos import Keycos#此处引入其他外来功能模块,在这里写import
+#from keycos import Keycos 此处引入其他外来功能模块,在这里写import
 
 
 setup()#初始化CH9329

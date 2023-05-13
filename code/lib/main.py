@@ -20,42 +20,29 @@ from rotary_irq_rp2 import RotaryIRQ
 from tools import load_config
 import time
 
-l = Pin(2, Pin.OUT)#设置引脚
-mode = Pin(3, Pin.OUT)
-uart = UART(0, baudrate=57600, tx=Pin(0), rx=Pin(1))
 
-keys = load_config()#加载键位配置
-
-Kms = [0,0,0,0,0,0,0]#创建变量
-Kold = []
-Knm = []
-Knms = []
-Kname = ['k1','k2','k3','k4','k5','k6','ST']
-
-RL = 0x00
-RR = 0x00
-R1ms = 0
-R2ms = 0
-senms = 0
-Lon = 0
 
 def main(a,b,c):
-    global l
-    global mode
-    global uart
-    global keys
-    global Kms
-    global Kold
-    global Knm
-    global Knms
-    global Kname
-    global RL
-    global RR
-    global R1ms
-    global R2ms
-    global senms
-    global Lon
-    
+
+    l = Pin(2, Pin.OUT)#设置引脚
+    mode = Pin(3, Pin.OUT)
+    uart = UART(0, baudrate=57600, tx=Pin(0), rx=Pin(1))
+
+    keys = load_config()#加载键位配置
+
+    Kms = [0,0,0,0,0,0,0]#创建变量
+    Kold = []
+    Knm = []
+    Knms = []
+    Kname = ['k1','k2','k3','k4','k5','k6','ST']
+
+    RL = 0x00
+    RR = 0x00
+    R1ms = 0
+    R2ms = 0
+    senms = 0
+    Lon = 0
+
     sw1 = Pin(9, Pin.IN, Pin.PULL_UP)# 覆盖设置引脚
     sw2 = Pin(10, Pin.IN, Pin.PULL_UP)
     sw3 = Pin(11, Pin.IN, Pin.PULL_UP)
