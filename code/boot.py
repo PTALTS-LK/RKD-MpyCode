@@ -24,18 +24,18 @@ F3 = Pin(8, Pin.IN, Pin.PULL_UP)
 
 #from keycos import Keycos 此处引入其他外来功能模块,在这里写import
 
-
-setup()#初始化CH9329
-
-while True :#主循环
-    if F1.value() == 0 :
-        #替换下面pass为外来模块的主函数，传入DIP开关引脚对象让函数知道自己由哪个开关控制
-        pass
-    elif F2.value() == 0 :
-        #同上
-        pass
-    elif F3.value() == 0 :
-        #同上
-        pass
-    else:
-        main(F1,F2,F3)#没有开关打开时运行默认主函数
+def init():
+    setup()#初始化CH9329
+    while True :#主循环
+        if F1.value() == 0 :
+            #替换下面pass为外来模块的主函数，传入DIP开关引脚对象让函数知道自己由哪个开关控制
+            pass
+        elif F2.value() == 0 :
+            #同上
+            pass
+        elif F3.value() == 0 :
+            #同上
+            pass
+        else:
+            main(F1,F2,F3)#没有开关打开时运行默认主函数
+init()
