@@ -17,7 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from tools import setup
 from machine import Pin
 from main import main
-from setting import setting
+from setting import Setting
 
 F1 = Pin(6, Pin.IN, Pin.PULL_UP)#设置DIP开关引脚
 F2 = Pin(7, Pin.IN, Pin.PULL_UP)
@@ -36,7 +36,7 @@ def init():
             pass
         elif F3.value() == 0 :
             #串口设置模式,用于设置按键,不建议替换
-            setting(F3)
+            Setting(F3)
         else:
             main(F1,F2,F3)#没有开关打开时运行默认主函数
 init()
