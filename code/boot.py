@@ -1,7 +1,7 @@
 '''
 RKD-MpyCode
-Copyright (C) 2023 PCX-LK
-https://github.com/PCX-LK/RKD-MpyCode
+Copyright (C) 2023 PTALTS-LK
+https://github.com/PTALTS-LK/RKD-MpyCode
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from tools import setup
 from machine import Pin
 from main import main
+from setting import setting
 
 F1 = Pin(6, Pin.IN, Pin.PULL_UP)#设置DIP开关引脚
 F2 = Pin(7, Pin.IN, Pin.PULL_UP)
@@ -34,8 +35,8 @@ def init():
             #同上
             pass
         elif F3.value() == 0 :
-            #同上
-            pass
+            #串口设置模式,用于设置按键,不建议替换
+            setting(F3)
         else:
             main(F1,F2,F3)#没有开关打开时运行默认主函数
 init()
