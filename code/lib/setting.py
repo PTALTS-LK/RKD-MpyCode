@@ -19,7 +19,7 @@ from machine import Pin
 from tools import key_dict
 import time,json
 
-def dect(text):
+def dect(text,keydict):
     if text[0] == "help":
         if len(text) == 1 :
             print("命令列表: \n\n")
@@ -105,7 +105,6 @@ def dect(text):
     
 
 def Setting(s):
-    keydict=key_dict()
     print("设置模式，输入 `help` 以查看帮助,如退出请先关闭开关再输入 `exit` 回车或者关闭开关之后按下RUN按钮")
     while s.value() == 0:
         text=input('> ')
@@ -114,7 +113,7 @@ def Setting(s):
         if text[0] == 'exit':
             break
         text=text.split()
-        dect(text)
+        dect(text,key_dict())
     print('退出设置模式')
 
 

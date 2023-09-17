@@ -1,7 +1,7 @@
 '''
 RKD-MpyCode
-Copyright (C) 2023 PTALTS-LK
-https://github.com/PTALTS-LK/RKD-MpyCode
+Copyright (C) 2023 PCX-LK
+https://github.com/PCX-LK/RKD-MpyCode
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ def key_dict():#键值转换字典
             'NumLock':0x53,'n1':0x59,'n2':0x5a,'n3':0x5b,'n4':0x5c,'n5':0x5d,'n6':0x5e,'n7':0x5f,'n8':0x60,'n9':0x61,'n0':0x62,'n/':0x54,'n*':0x55,'n-':0x56,'n+':0x57,'nEnter':0x58,'n.':0x63}
 
 def write_defconf():#写入默认键位配置
-    file=open('config.json',mode='w+')
+    file=open('/config.json',mode='w+')
     raw=DefConfig
     file.seek(0)
     file.write(raw)
@@ -65,12 +65,12 @@ def load_config():#从config.json加载键位配置
     keydict=key_dict()
     try:
         file=open('config.json',mode='r')
+        data=json.load(file)
     except ValueError:
         return write_defconf()
     except OSError:
         return write_defconf()
     else:
-        data=json.load(file)
         for i in data :
             for ii in range(len(data[i])):
                 data[i][ii]=keydict[data[i][ii]]
@@ -91,11 +91,10 @@ def setup():#CH9329初始化
             chk = chk + i
         sent = out+bytes([chk&0xff])
         suart.write(sent)
-        time.sleep_ms(50)
+        time.sleep_ms(10)
         suart.write(b'\x57\xab\x00\x0b\x10\x00\x0ePCX-LK_Creates\x00')
-        time.sleep_ms(50)
+        time.sleep_ms(10)
         suart.write(b'\x57\xab\x00\x0b\x05\x01\x03RKD\xf7')
-        time.sleep_ms(50)
+        time.sleep_ms(10)
         suart.write(b'\x57\xab\x00\x0f\x00\x11')
-        time.sleep_ms(50)
-        print('ch9329 setup finish')
+        time.sleep_ms(10)
