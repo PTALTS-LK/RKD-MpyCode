@@ -1,7 +1,7 @@
 '''
 RKD-MpyCode
-Copyright (C) 2023 PTALTS-LK
-https://github.com/PTALTS-LK/RKD-MpyCode
+Copyright (C) 2023 PCX-LK
+https://github.com/PCX-LK/RKD-MpyCode
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -14,29 +14,33 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
-from tools import setup
+from tools import Tools
 from machine import Pin
-from main import main
-from setting import Setting
+from main import Main
+from setting import Settings
 
+chdef=Pin(5,Pin.OUT,Pin.PULL_UP)
 F1 = Pin(6, Pin.IN, Pin.PULL_UP)#设置DIP开关引脚
 F2 = Pin(7, Pin.IN, Pin.PULL_UP)
 F3 = Pin(8, Pin.IN, Pin.PULL_UP)
 
-#from keycos import Keycos 此处引入其他外来功能模块,在这里写import
+t = Tools()
+
+from keycos import Keycos#此处引入其他外来功能模块,在这里写import
+from buzzer import buzzer_main
 
 def init():
-    setup()#初始化CH9329
+    t.setup()#初始化CH9329
     while True :#主循环
         if F1.value() == 0 :
             #替换下面pass为外来模块的主函数，传入DIP开关引脚对象让函数知道自己由哪个开关控制
-            pass
+            Keycos(F1)
         elif F2.value() == 0 :
             #同上
-            pass
+            buzzer_main(F2)
         elif F3.value() == 0 :
-            #串口设置模式,用于设置按键,不建议替换
-            Setting(F3)
+            #同上
+            Settings(t,F3).main()
         else:
-            main(F1,F2,F3)#没有开关打开时运行默认主函数
+            Main(t,F1,F2,F3).main()#没有开关打开时运行默认主函数
 init()
