@@ -26,18 +26,18 @@ F3 = Pin(8, Pin.IN, Pin.PULL_UP)
 
 t = Tools()
 
-from keycos import Keycos#此处引入其他外来功能模块,在这里写import
-from buzzer import buzzer_main
+#此处引入其他外来功能模块,在这里写import
+#from *** import ****
 
 def init():
     t.setup()#初始化CH9329
     while True :#主循环
         if F1.value() == 0 :
             #替换下面pass为外来模块的主函数，传入DIP开关引脚对象让函数知道自己由哪个开关控制
-            Keycos(F1)
+            pass
         elif F2.value() == 0 :
             #同上
-            buzzer_main(F2)
+            pass
         elif F3.value() == 0 :
             #同上
             Settings(t,F3).main()

@@ -105,51 +105,68 @@ class Settings:
 
     def _key_getKeyValue(self,text):
         """key指令的getKeyValue参数主函数"""
-        file=open('/config.json')
-        data=json.load(file)
-        if len(text) == 2:
-            print('未输入键名,请输入 `help key` 查看帮助')
-        elif text[2] not in data:
-            print('键名无效,请输入 `help key` 查看帮助')
+        try:
+            file=open('/config.json')
+        except OSError:
+            print('检测到按键配置json文件不存在,已写入默认配置,如需继续读取请再次输入同样指令')
+            self.tools.write_defconf()
         else:
-            print('目标键绑定为:')
-            print('  '+str(data[text[2]]))
-        file.close()
+            
+            try:
+                data=json.load(file)
+            except ValueError:
+                print('检测到按键配置json文件损坏,已写入默认配置,如需继续读取请再次输入同样指令')
+                self.tools.write_defconf()
+            else:
+                
+                if len(text) == 2:
+                    print('未输入键名,请输入 `help key` 查看帮助')
+                elif text[2] not in data:
+                    print('键名无效,请输入 `help key` 查看帮助')
+                else:
+                    print('目标键绑定为:')
+                    print('  '+str(data[text[2]]))
+                file.close()
     
     def _key_setKeyValue(self,text):
         """key指令的setKeyValue参数主函数"""
         kmap=[]
         bk=0
-        file=open('/config.json')
-        data=json.load(file)
-        file.close()
-        file=open('/config.json',mode='w+')
-        if len(text) == 2:
-            print('未输入键名,请输入 `help key` 查看帮助')
-        elif text[2] not in data:
-            print('键名无效,请输入 `help key` 查看帮助')
+        try:
+            file=open('/config.json')
+        except OSError:
+            print('检测到按键配置json文件不存在,已写入默认配置,如需继续修改请再次输入同样指令')
+            self.tools.write_defconf()
         else:
-            if len(text) == 3:
-                print('未输入修改值,请输入 `help key` 查看帮助')
+            try:
+                data=json.load(file)
+            except ValueError:
+                print('检测到按键配置json文件损坏,已写入默认配置,如需继续修改请再次输入同样指令')
+                self.tools.write_defconf()
             else:
-                for i in text[3:]:
-                    if i not in self.keydict:
-                        print('修改值无效,请输入 `help key` 查看帮助')
-                        bk = 1
-                        break
+                file.close()
+                file=open('/config.json',mode='w+')
+                if len(text) == 2:
+                    print('未输入键名,请输入 `help key` 查看帮助')
+                elif text[2] not in data:
+                    print('键名无效,请输入 `help key` 查看帮助')
+                else:
+                    
+                    if len(text) == 3:
+                        print('未输入修改值,请输入 `help key` 查看帮助')
                     else:
-                        kmap.append(i)
-                if bk == 0 :
-                    data[text[2]]=kmap
-                    json.dump(data,file,separators=(',', ':'))
-                    file.flush()
-                    file.close()
-                    print('修改成功')
-
-    
-
-
-
-
-
+                        
+                        for i in text[3:]:
+                            if i not in self.keydict:
+                                print('修改值无效,请输入 `help key` 查看帮助')
+                                bk = 1
+                                break
+                            else:
+                                kmap.append(i)
+                        if bk == 0 :
+                            data[text[2]]=kmap
+                            json.dump(data,file,separators=(',', ':'))
+                            file.flush()
+                            file.close()
+                            print('修改成功')
 
