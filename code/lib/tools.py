@@ -32,17 +32,58 @@ class Tools:
 
         #默认键位配置json
         self.DefConfig="""{
-    "k1": ["D"],
-    "k2": ["F"],
-    "k3": ["J"],
-    "k4": ["K"],
-    "k5": ["V"],
-    "k6": ["N"],
-    "ST": ["Space"],
-    "SR1L": ["W"],
-    "SR1R": ["E"],
-    "SR2L": ["O"],
-    "SR2R": ["P"]
+    "m1":{
+        "k1": ["D"],
+        "k2": ["F"],
+        "k3": ["J"],
+        "k4": ["K"],
+        "k5": ["V"],
+        "k6": ["N"],
+        "ST": ["Space"],
+        "SR1L": ["W"],
+        "SR1R": ["E"],
+        "SR2L": ["O"],
+        "SR2R": ["P"]
+    },
+    "m2":{
+        "k1": ["D"],
+        "k2": ["F"],
+        "k3": ["J"],
+        "k4": ["K"],
+        "k5": ["V"],
+        "k6": ["N"],
+        "ST": ["Space"],
+        "SR1L": ["W"],
+        "SR1R": ["E"],
+        "SR2L": ["O"],
+        "SR2R": ["P"]
+    },
+    "m3":{
+        "k1": ["D"],
+        "k2": ["F"],
+        "k3": ["J"],
+        "k4": ["K"],
+        "k5": ["V"],
+        "k6": ["N"],
+        "ST": ["Space"],
+        "SR1L": ["W"],
+        "SR1R": ["E"],
+        "SR2L": ["O"],
+        "SR2R": ["P"]
+    },
+    "m4":{
+        "k1": ["D"],
+        "k2": ["F"],
+        "k3": ["J"],
+        "k4": ["K"],
+        "k5": ["V"],
+        "k6": ["N"],
+        "ST": ["Space"],
+        "SR1L": ["W"],
+        "SR1R": ["E"],
+        "SR2L": ["O"],
+        "SR2R": ["P"]
+    }
 }"""
         
         self.KeyDict={'`':0x35,'1':0x1e,'2':0x1f,'3':0x20,'4':21,'5':0x22,'6':0x23,'7':0x24,'8':0x25,'9':0x26,'0':0x27,'-':0x2d,'=':0x2e,'BackSpace':0x2a,
@@ -63,7 +104,7 @@ class Tools:
         file.write(raw)
         file.flush()
         file.close()
-        return {'k1':[7],'k2':[9],'k3':[13],'k4':[14],'k5':[25],'k6':[17],'ST':[44],'SR1L':[26],'SR1R':[8],'SR2L':[18],'SR2R':[19]}
+        return {'m4': {'SR1R': [8], 'k3': [13], 'SR2R': [19], 'k6': [17], 'SR1L': [26], 'SR2L': [18], 'k4': [14], 'k5': [25], 'k2': [9], 'ST': [44], 'k1': [7]}, 'm1': {'SR1R': [8], 'k3': [13], 'SR2R': [19], 'k6': [17], 'SR1L': [26], 'SR2L': [18], 'k4': [14], 'k5': [25], 'k2': [9], 'ST': [44], 'k1': [7]}, 'm2': {'SR1R': [8], 'k3': [13], 'SR2R': [19], 'k6': [17], 'SR1L': [26], 'SR2L': [18], 'k4': [14], 'k5': [25], 'k2': [9], 'ST': [44], 'k1': [7]}, 'm3': {'SR1R': [8], 'k3': [13], 'SR2R': [19], 'k6': [17], 'SR1L': [26], 'SR2L': [18], 'k4': [14], 'k5': [25], 'k2': [9], 'ST': [44], 'k1': [7]}}
 
     def load_config(self):
         """从config.json加载键位配置"""
@@ -77,8 +118,9 @@ class Tools:
             return self.write_defconf()
         else:
             for i in data :
-                for ii in range(len(data[i])):
-                    data[i][ii]=keydict[data[i][ii]]
+                for ii in data[i] :
+                    for iii in range(len(data[i][ii])):
+                        data[i][ii][iii]=keydict[data[i][ii][iii]]
             file.close()
             return data
     

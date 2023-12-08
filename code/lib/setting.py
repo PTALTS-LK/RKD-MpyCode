@@ -20,10 +20,13 @@ import time,json
 
 class Settings:
     """用于修改设置的类"""
-    def __init__(self,tools,SET_Pin):
+    def __init__(self,var,tools,SET_Pin,f1,f2):
         """初始化"""
+        self.var = var
         self.tools = tools
         self.SET_Pin = SET_Pin
+        self.S_1 = f1
+        self.S_2 = f2
         self.keydict = self.tools.KeyDict
     
     def main(self):
@@ -63,8 +66,9 @@ class Settings:
                 print('      支持以下操作:')
                 print('        `getKeyList`       获取所有可设置的键的键名,无后续参数')
                 print('        `getKeyMap`        获取按键绑定表,无后续参数')
-                print('        `getKeyValue`      获取目标键名对应键的按键绑定,后续参数为目标键名,请使用 `getKeyList` 获取键名')
-                print('        `setKeyValue`      设置按键绑定,第一个后续参数为: 目标键键名,第2-N个后续参数为目标键的按键绑定表键位')
+                print('        `getKeyValue`      获取当前键位预设组中目标键名对应键的按键绑定. 使用F2F1来切换目标键位预设组,后续参数为目标键名,请使用 `getKeyList` 获取键名')
+                print('        `getKeyGroupValue` 获取当前键位预设组的所有按键绑定. 使用F2F1来切换修改目标键位预设组')
+                print('        `setKeyValue`      设置按键绑定. 使用F2F1来切换目标键位预设组,第一个后续参数为: 目标键键名,第2-N个后续参数为目标键的按键绑定表键位')
     
     def _key(self,text):
         """key指令主函数"""
@@ -76,6 +80,8 @@ class Settings:
             self._key_getKeyMap()
         elif text[1] == 'getKeyValue':
             self._key_getKeyValue(text)
+        elif text[1] == 'getKeyGroupValue':
+            self._key_getKeyGroupValue(text)
         elif text[1] == 'setKeyValue':
             self._key_setKeyValue(text)
         else:
@@ -88,7 +94,7 @@ class Settings:
         print('  `k1`  主板上从左往右第一个按键,默认`D`')
         print('  `k2`  主板上从左往右第二个按键,默认`F`')
         print('  `k3`  主板上从左往右第三个按键,默认`J`')
-        print('  `k4`  主板上从左往右第四个按键,默认`K`')
+        print('  `k4`  主板上从左往右第四个按键mode = (not self.SET_Pin_a.value())*2**0+(not self.SET_Pin_b.value())*2**1,默认`K`')
         print('SDVX扩展板按键:')
         print('  `ST`    圆形按键,用作Start键,默认`Space`')
         print('  `k5`    圆形按键左边的按键,默认`V`')
@@ -118,16 +124,62 @@ class Settings:
                 print('检测到按键配置json文件损坏,已写入默认配置,如需继续读取请再次输入同样指令')
                 self.tools.write_defconf()
             else:
-                
+                mode = (not self.S_1.value())*2**0+(not self.S_2.value())*2**1
+                if mode == 0:
+                    kindex = 'm1'
+                    print('目标预设组: 1')
+                elif mode == 1:
+                    kindex = 'm2'
+                    print('目标预设组: 2')
+                elif mode == 1:
+                    kindex = 'm3'
+                    print('目标预设组: 3')
+                elif mode == 1:
+                    kindex = 'm4'
+                    print('目标预设组: 4')
+                    
                 if len(text) == 2:
                     print('未输入键名,请输入 `help key` 查看帮助')
-                elif text[2] not in data:
+                elif text[2] not in data[kindex]:
                     print('键名无效,请输入 `help key` 查看帮助')
                 else:
                     print('目标键绑定为:')
-                    print('  '+str(data[text[2]]))
+                    print('  '+str(data[kindex][text[2]]))
                 file.close()
-    
+                
+    def _key_getKeyGroupValue(self,text):
+        """key指令的getKeyGroupValue参数主函数"""
+        try:
+            file=open('/config.json')
+        except OSError:
+            print('检测到按键配置json文件不存在,已写入默认配置,如需继续读取请再次输入同样指令')
+            self.tools.write_defconf()
+        else:
+            
+            try:
+                data=json.load(file)
+            except ValueError:
+                print('检测到按键配置json文件损坏,已写入默认配置,如需继续读取请再次输入同样指令')
+                self.tools.write_defconf()
+            else:
+                mode = (not self.S_1.value())*2**0+(not self.S_2.value())*2**1
+                if mode == 0:
+                    kindex = 'm1'
+                    print('目标预设组: 1')
+                elif mode == 1:
+                    kindex = 'm2'
+                    print('目标预设组: 2')
+                elif mode == 1:
+                    kindex = 'm3'
+                    print('目标预设组: 3')
+                elif mode == 1:
+                    kindex = 'm4'
+                    print('目标预设组: 4')
+                    
+                print('目标预设组绑定为:')
+                print('  '+str(data[kindex]))
+                file.close()
+                
     def _key_setKeyValue(self,text):
         """key指令的setKeyValue参数主函数"""
         kmap=[]
@@ -146,9 +198,24 @@ class Settings:
             else:
                 file.close()
                 file=open('/config.json',mode='w+')
+                
+                mode = (not self.S_1.value())*2**0+(not self.S_2.value())*2**1
+                if mode == 0:
+                    kindex = 'm1'
+                    print('目标预设: 1')
+                elif mode == 1:
+                    kindex = 'm2'
+                    print('目标预设: 2')
+                elif mode == 1:
+                    kindex = 'm3'
+                    print('目标预设: 3')
+                elif mode == 1:
+                    kindex = 'm4'
+                    print('目标预设: 4')
+                    
                 if len(text) == 2:
                     print('未输入键名,请输入 `help key` 查看帮助')
-                elif text[2] not in data:
+                elif text[2] not in data[kindex]:
                     print('键名无效,请输入 `help key` 查看帮助')
                 else:
                     
@@ -164,7 +231,7 @@ class Settings:
                             else:
                                 kmap.append(i)
                         if bk == 0 :
-                            data[text[2]]=kmap
+                            data[kindex][text[2]]=kmap
                             json.dump(data,file,separators=(',', ':'))
                             file.flush()
                             file.close()

@@ -24,17 +24,18 @@ from tools import Tools
 
 class Main:
     """默认的键盘行为"""
-    def __init__(self,tools,SET_Pin_a,SET_Pin_b,SET_Pin_c):
+    def __init__(self,var,tools,SET_Pin_a,SET_Pin_b,SET_Pin_c):
         """初始化相关变量和设置引脚"""
         self.tools = tools
         self.SET_Pin_a = SET_Pin_a
         self.SET_Pin_b = SET_Pin_b
         self.SET_Pin_c = SET_Pin_c
+        self.var = var
         
         self.l = Pin(2, Pin.OUT)#设置引脚
         self.mode = Pin(3, Pin.OUT)
         self.uart = UART(0, baudrate=57600, tx=Pin(0), rx=Pin(1))
-
+        
         self.keys = self.tools.load_config()#加载键位配置
 
         self.Kms = [0,0,0,0,0,0,0]#创建变量
@@ -42,6 +43,7 @@ class Main:
         self.Knm = []
         self.Knms = []
         self.Kname = ['k1','k2','k3','k4','k5','k6','ST']
+        self.KD = {}
 
         self.RL = 0x00
         self.RR = 0x00
@@ -84,14 +86,20 @@ class Main:
             range_mode=RotaryIRQ.RANGE_BOUNDED)
         self.SR1.set(value=1)#设置编码器初始值
         self.SR2.set(value=1)
-        self.KD = {'k1':self.keys['k1'],'k2':self.keys['k2'],'k3':self.keys['k3'],
-                   'k4':self.keys['k4'],'k5':self.keys['k5'],'k6':self.keys['k6'],
-                   'ST':self.keys['ST']}#初步处理键位设置
+        
+        if self.var.boot_mode == 1:#在boot mode 1时加载预设组1
+            self.KD = {'k1':self.keys['m1']['k1'],'k2':self.keys['m1']['k2'],
+                       'k3':self.keys['m1']['k3'],'k4':self.keys['m1']['k4'],
+                       'k5':self.keys['m1']['k5'],'k6':self.keys['m1']['k6'],
+                       'ST':self.keys['m1']['ST']}#初步处理键位设置
+            
 
     def main(self):
         """主循环"""
-        while self.SET_Pin_a.value()+self.SET_Pin_b.value()+self.SET_Pin_c.value() == 3:
+        while self._mode_dect():
             
+            self._kmap_dect()    
+                
             self._read_status()
             
             self._key_processing()
@@ -116,6 +124,39 @@ class Main:
             self.Knms = []#重置按键数据
             self.Knm = []
 
+    def _mode_dect(self):
+        """检查处于哪个boot循环"""
+        if self.var.boot_mode == 0:
+            return self.SET_Pin_c.value()
+        else:
+            return (self.SET_Pin_a.value()+self.SET_Pin_b.value()+self.SET_Pin_c.value() == 3)
+    
+    def _kmap_dect(self):
+        """在boot mode 0下检测选择了哪个键位预设"""
+        if self.var.boot_mode == 0:
+            mode = (not self.SET_Pin_a.value())*2**0+(not self.SET_Pin_b.value())*2**1
+            self.var.kmap_index = mode
+            if mode == 0:
+                self.KD = {'k1':self.keys['m1']['k1'],'k2':self.keys['m1']['k2'],
+                           'k3':self.keys['m1']['k3'],'k4':self.keys['m1']['k4'],
+                           'k5':self.keys['m1']['k5'],'k6':self.keys['m1']['k6'],
+                           'ST':self.keys['m1']['ST']}#加载键位预设1
+            elif mode == 1:
+                self.KD = {'k1':self.keys['m2']['k1'],'k2':self.keys['m2']['k2'],
+                           'k3':self.keys['m2']['k3'],'k4':self.keys['m2']['k4'],
+                           'k5':self.keys['m2']['k5'],'k6':self.keys['m2']['k6'],
+                           'ST':self.keys['m2']['ST']}#加载键位预设2
+            elif mode == 2:
+                self.KD = {'k1':self.keys['m3']['k1'],'k2':self.keys['m3']['k2'],
+                           'k3':self.keys['m3']['k3'],'k4':self.keys['m3']['k4'],
+                           'k5':self.keys['m3']['k5'],'k6':self.keys['m3']['k6'],
+                           'ST':self.keys['m3']['ST']}#加载键位预设3
+            elif mode == 3:
+                self.KD = {'k1':self.keys['m4']['k1'],'k2':self.keys['m4']['k2'],
+                           'k3':self.keys['m4']['k3'],'k4':self.keys['m4']['k4'],
+                           'k5':self.keys['m4']['k5'],'k6':self.keys['m4']['k6'],
+                           'ST':self.keys['m4']['ST']}#加载键位预设4
+        
     def _read_status(self):
         """读取按键/编码器状态"""
         self.RTv = [self.SR1.value(),self.SR2.value()]#读取编码器状态

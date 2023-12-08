@@ -18,6 +18,7 @@ from tools import Tools
 from machine import Pin
 from main import Main
 from setting import Settings
+from var import Var
 
 chdef=Pin(5,Pin.OUT,Pin.PULL_UP)
 F1 = Pin(6, Pin.IN, Pin.PULL_UP)#设置DIP开关引脚
@@ -25,11 +26,23 @@ F2 = Pin(7, Pin.IN, Pin.PULL_UP)
 F3 = Pin(8, Pin.IN, Pin.PULL_UP)
 
 t = Tools()
+v = Var()
 
-#此处引入其他外来功能模块,在这里写import
-#from *** import ****
+#from keycos import Keycos 此处引入其他外来功能模块,在这里写import
 
-def init():
+def a_main():
+    v.boot_mode = 0#boot mode
+    t.setup()#初始化CH9329
+    while True:
+        if F3.value() == 0:
+            Settings(v,t,F3,F1,F2).main()
+        else:
+            Main(v,t,F1,F2,F3).main()
+            
+    
+    
+def b_main():
+    v.boot_mode = 1#boot mode
     t.setup()#初始化CH9329
     while True :#主循环
         if F1.value() == 0 :
@@ -40,7 +53,8 @@ def init():
             pass
         elif F3.value() == 0 :
             #同上
-            Settings(t,F3).main()
+            Settings(mode,t,F3).main()
         else:
-            Main(t,F1,F2,F3).main()#没有开关打开时运行默认主函数
-init()
+            Main(v,t,F1,F2,F3).main()#没有开关打开时运行默认主函数
+
+a_main()
