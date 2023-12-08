@@ -135,23 +135,26 @@ class Main:
         """在boot mode 0下检测选择了哪个键位预设"""
         if self.var.boot_mode == 0:
             mode = (not self.SET_Pin_a.value())*2**0+(not self.SET_Pin_b.value())*2**1
-            self.var.kmap_index = mode
             if mode == 0:
+                self.var.kamp_index = 'm1'
                 self.KD = {'k1':self.keys['m1']['k1'],'k2':self.keys['m1']['k2'],
                            'k3':self.keys['m1']['k3'],'k4':self.keys['m1']['k4'],
                            'k5':self.keys['m1']['k5'],'k6':self.keys['m1']['k6'],
                            'ST':self.keys['m1']['ST']}#加载键位预设1
             elif mode == 1:
+                self.var.kamp_index = 'm2'
                 self.KD = {'k1':self.keys['m2']['k1'],'k2':self.keys['m2']['k2'],
                            'k3':self.keys['m2']['k3'],'k4':self.keys['m2']['k4'],
                            'k5':self.keys['m2']['k5'],'k6':self.keys['m2']['k6'],
                            'ST':self.keys['m2']['ST']}#加载键位预设2
             elif mode == 2:
+                self.var.kamp_index = 'm3'
                 self.KD = {'k1':self.keys['m3']['k1'],'k2':self.keys['m3']['k2'],
                            'k3':self.keys['m3']['k3'],'k4':self.keys['m3']['k4'],
                            'k5':self.keys['m3']['k5'],'k6':self.keys['m3']['k6'],
                            'ST':self.keys['m3']['ST']}#加载键位预设3
             elif mode == 3:
+                self.var.kamp_index = 'm4'
                 self.KD = {'k1':self.keys['m4']['k1'],'k2':self.keys['m4']['k2'],
                            'k3':self.keys['m4']['k3'],'k4':self.keys['m4']['k4'],
                            'k5':self.keys['m4']['k5'],'k6':self.keys['m4']['k6'],
@@ -179,11 +182,11 @@ class Main:
         """处理编码器状态"""
         if self.RTv[0] != 1 :#编码器输入处理
             if self.RTv[0] == 0 :
-                self.RL = self.keys['SR1L']
+                self.RL = self.keys[self.var.kamp_index]['SR1L']
                 self.R1ms = time.ticks_ms()
                 self.SR1.set(value=1)
             elif self.RTv[0] == 2 :
-                self.RL = keys['SR1R']
+                self.RL = keys[self.var.kamp_index]['SR1R']
                 self.R1ms = time.ticks_ms()
                 self.SR1.set(value=1)
             self.Knm.append(self.RL)
@@ -194,11 +197,11 @@ class Main:
                 
         if self.RTv[1] != 1 :
             if self.RTv[1] == 0 :
-                self.RR = self.keys['SR2L']
+                self.RR = self.keys[self.var.kamp_index]['SR2L']
                 self.R2ms = time.ticks_ms()
                 self.SR2.set(value=1)
             elif self.RTv[1] == 2 :
-                self.RR = self.keys['SR2R']
+                self.RR = self.keys[self.var.kamp_index]['SR2R']
                 self.R2ms = time.ticks_ms()
                 self.SR2.set(value=1)
             self.Knm.append(self.RR)
