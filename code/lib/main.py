@@ -186,7 +186,7 @@ class Main:
                 self.R1ms = time.ticks_ms()
                 self.SR1.set(value=1)
             elif self.RTv[0] == 2 :
-                self.RL = keys[self.var.kamp_index]['SR1R']
+                self.RL = self.keys[self.var.kamp_index]['SR1R']
                 self.R1ms = time.ticks_ms()
                 self.SR1.set(value=1)
             self.Knm.append(self.RL)
