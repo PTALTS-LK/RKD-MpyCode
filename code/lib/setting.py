@@ -95,7 +95,7 @@ class Settings:
         print('  `k1`  主板上从左往右第一个按键,默认`D`')
         print('  `k2`  主板上从左往右第二个按键,默认`F`')
         print('  `k3`  主板上从左往右第三个按键,默认`J`')
-        print('  `k4`  主板上从左往右第四个按键mode = (not self.SET_Pin_a.value())*2**0+(not self.SET_Pin_b.value())*2**1,默认`K`')
+        print('  `k4`  主板上从左往右第四个按键,默认`K`')
         print('SDVX扩展板按键:')
         print('  `ST`    圆形按键,用作Start键,默认`Space`')
         print('  `k5`    圆形按键左边的按键,默认`V`')
@@ -174,7 +174,6 @@ class Settings:
                 self.tools.write_defconf()
             else:
                 file.close()
-                file=open('/config.json',mode='w+')
                 
                 self._dectKIndex()
                     
@@ -183,7 +182,6 @@ class Settings:
                 elif text[2] not in data[self.kindex]:
                     print('键名无效,请输入 `help key` 查看帮助')
                 else:
-                    
                     if len(text) == 3:
                         print('未输入修改值,请输入 `help key` 查看帮助')
                     else:
@@ -196,6 +194,7 @@ class Settings:
                             else:
                                 kmap.append(i)
                         if bk == 0 :
+                            file=open('/config.json',mode='w+')
                             data[self.kindex][text[2]]=kmap
                             json.dump(data,file,separators=(',', ':'))
                             file.flush()
@@ -210,9 +209,9 @@ class Settings:
         elif mode == 1:
             self.kindex = 'm2'
             print('目标预设: 2')
-        elif mode == 1:
+        elif mode == 2:
             self.kindex = 'm3'
             print('目标预设: 3')
-        elif mode == 1:
+        elif mode == 3:
             self.kindex = 'm4'
             print('目标预设: 4')
