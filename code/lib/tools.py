@@ -29,6 +29,8 @@ class Tools:
         self.sw5 = Pin(14, Pin.IN, Pin.PULL_UP)
         self.sw6 = Pin(15, Pin.IN, Pin.PULL_UP)
         self.ST = Pin(13, Pin.IN, Pin.PULL_UP)
+        self.RTSL = Pin(18, Pin.IN, Pin.PULL_UP)
+        self.RTSR = Pin(21, Pin.IN, Pin.PULL_UP)
 
         #默认键位配置json
         self.DefConfig="""{
@@ -40,10 +42,12 @@ class Tools:
         "k5": ["V"],
         "k6": ["N"],
         "ST": ["Space"],
-        "SR1L": ["W"],
-        "SR1R": ["E"],
-        "SR2L": ["O"],
-        "SR2R": ["P"]
+        "RTLL": ["W"],
+        "RTLR": ["E"],
+        "RTLS": ["NULL"],
+        "RTRL": ["O"],
+        "RTRR": ["P"],
+        "RTRS": ["NULL"]
     },
     "m2":{
         "k1": ["D"],
@@ -53,10 +57,12 @@ class Tools:
         "k5": ["V"],
         "k6": ["N"],
         "ST": ["Space"],
-        "SR1L": ["W"],
-        "SR1R": ["E"],
-        "SR2L": ["O"],
-        "SR2R": ["P"]
+        "RTLL": ["W"],
+        "RTLR": ["E"],
+        "RTLS": ["NULL"],
+        "RTRL": ["O"],
+        "RTRR": ["P"],
+        "RTRS": ["NULL"]
     },
     "m3":{
         "k1": ["D"],
@@ -66,10 +72,12 @@ class Tools:
         "k5": ["V"],
         "k6": ["N"],
         "ST": ["Space"],
-        "SR1L": ["W"],
-        "SR1R": ["E"],
-        "SR2L": ["O"],
-        "SR2R": ["P"]
+        "RTLL": ["W"],
+        "RTLR": ["E"],
+        "RTLS": ["NULL"],
+        "RTRL": ["O"],
+        "RTRR": ["P"],
+        "RTRS": ["NULL"]
     },
     "m4":{
         "k1": ["D"],
@@ -79,10 +87,10 @@ class Tools:
         "k5": ["V"],
         "k6": ["N"],
         "ST": ["Space"],
-        "SR1L": ["W"],
-        "SR1R": ["E"],
-        "SR2L": ["O"],
-        "SR2R": ["P"]
+        "RTLL": ["W"],
+        "RTLR": ["E"],
+        "RTRL": ["O"],
+        "RTRR": ["P"]
     }
 }"""
         
@@ -94,7 +102,7 @@ class Tools:
             'Insert':0x49,'Home':0x4a,'PageUp':0x4b,'Delete':0x49,'End':0x4d,'PageDown':0x4e,
             'UpArrow':0x52,'LeftArrow':0x50,'DownArrow':0x51,'RightArrow':0x4f,
             'ESC':0x29,'F1':0x3a,'F2':0x3b,'F3':0x3c,'F4':0x3d,'F5':0x3e,'F6':0x3f,'F7':0x40,'F8':0x41,'F9':0x42,'F10':0x43,'F11':0x44,'F12':0x45,'PrintScreen':0x46,'ScrollLock':0x47,'Pause':0x48,
-            'NumLock':0x53,'n1':0x59,'n2':0x5a,'n3':0x5b,'n4':0x5c,'n5':0x5d,'n6':0x5e,'n7':0x5f,'n8':0x60,'n9':0x61,'n0':0x62,'n/':0x54,'n*':0x55,'n-':0x56,'n+':0x57,'nEnter':0x58,'n.':0x63}
+            'NumLock':0x53,'n1':0x59,'n2':0x5a,'n3':0x5b,'n4':0x5c,'n5':0x5d,'n6':0x5e,'n7':0x5f,'n8':0x60,'n9':0x61,'n0':0x62,'n/':0x54,'n*':0x55,'n-':0x56,'n+':0x57,'nEnter':0x58,'n.':0x63,'NULL':0x00}
 
     def write_defconf(self):
         """写入默认键位配置"""
@@ -104,7 +112,7 @@ class Tools:
         file.write(raw)
         file.flush()
         file.close()
-        return {'m4': {'SR1R': [8], 'k3': [13], 'SR2R': [19], 'k6': [17], 'SR1L': [26], 'SR2L': [18], 'k4': [14], 'k5': [25], 'k2': [9], 'ST': [44], 'k1': [7]}, 'm1': {'SR1R': [8], 'k3': [13], 'SR2R': [19], 'k6': [17], 'SR1L': [26], 'SR2L': [18], 'k4': [14], 'k5': [25], 'k2': [9], 'ST': [44], 'k1': [7]}, 'm2': {'SR1R': [8], 'k3': [13], 'SR2R': [19], 'k6': [17], 'SR1L': [26], 'SR2L': [18], 'k4': [14], 'k5': [25], 'k2': [9], 'ST': [44], 'k1': [7]}, 'm3': {'SR1R': [8], 'k3': [13], 'SR2R': [19], 'k6': [17], 'SR1L': [26], 'SR2L': [18], 'k4': [14], 'k5': [25], 'k2': [9], 'ST': [44], 'k1': [7]}}
+        return {'m4': {'RTLR': [8], 'k3': [13], 'RTRR': [19], 'k6': [17], 'RTLL': [26], 'RTRL': [18], 'k4': [14], 'k5': [25], 'k2': [9], 'ST': [44], 'k1': [7], 'RTLS': [0], 'RTRS': [0]}, 'm1': {'RTLR': [8], 'k3': [13], 'RTRR': [19], 'k6': [17], 'RTLL': [26], 'RTRL': [18], 'k4': [14], 'k5': [25], 'k2': [9], 'ST': [44], 'k1': [7], 'RTLS': [0], 'RTRS': [0]}, 'm2': {'RTLR': [8], 'k3': [13], 'RTRR': [19], 'k6': [17], 'RTLL': [26], 'RTRL': [18], 'k4': [14], 'k5': [25], 'k2': [9], 'ST': [44], 'k1': [7], 'RTLS': [0], 'RTRS': [0]}, 'm3': {'RTLR': [8], 'k3': [13], 'RTRR': [19], 'k6': [17], 'RTLL': [26], 'RTRL': [18], 'k4': [14], 'k5': [25], 'k2': [9], 'ST': [44], 'k1': [7], 'RTLS': [0], 'RTRS': [0]}}
 
     def load_config(self):
         """从config.json加载键位配置"""
@@ -112,6 +120,8 @@ class Tools:
         try:
             file=open('config.json',mode='r')
             data=json.load(file)
+        except KeyError:
+            return self.write_defconf()
         except ValueError:
             return self.write_defconf()
         except OSError:

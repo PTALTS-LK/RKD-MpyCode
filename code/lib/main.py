@@ -1,6 +1,6 @@
 '''
 RKD-MpyCode
-Copyright (C) 2023 PCX-LK
+Copyright (C) 2024 PCX-LK
 https://github.com/PCX-LK/RKD-MpyCode
 
 This program is free software: you can redistribute it and/or modify
@@ -35,20 +35,35 @@ class Main:
         self.l = Pin(2, Pin.OUT)#设置引脚
         self.mode = Pin(3, Pin.OUT)
         self.uart = UART(0, baudrate=57600, tx=Pin(0), rx=Pin(1))
+        self.SR1 = RotaryIRQ(#设置旋转编码器
+            pin_num_clk=17, 
+            pin_num_dt=16, 
+            min_val=0, 
+            max_val=2,
+            pull_up=True,
+            half_step=False,
+            range_mode=RotaryIRQ.RANGE_BOUNDED)
+        self.SR2 = RotaryIRQ(
+            pin_num_clk=20, 
+            pin_num_dt=19, 
+            min_val=0, 
+            max_val=2,
+            pull_up=True,
+            half_step=False,
+            range_mode=RotaryIRQ.RANGE_BOUNDED)
         
         self.keys = self.tools.load_config()#加载键位配置
+        # 创建变量
+        self.Kms = [0,0,0,0,0,0,0,0,0]# 上次触发时间
+        self.Kstatus = [False,False,False,False,False,False,False,False,False] # 按键状态
+        self.nowtime = 0
+        self.Knm = [0,0,0,0,0,0] # 要发送的按键包
+        self.Knmm = []
+        self.Knmold = []
+        self.KD = [] # 键值
+        self.RT = [[self.SR1,[0x00],'RTLL','RTLR',False],[self.SR2,[0x00],'RTRL','RTRR',False]]
+        self.Rms = [0,0]
 
-        self.Kms = [0,0,0,0,0,0,0]#创建变量
-        self.Kold = []
-        self.Knm = []
-        self.Knms = []
-        self.Kname = ['k1','k2','k3','k4','k5','k6','ST']
-        self.KD = {}
-
-        self.RL = 0x00
-        self.RR = 0x00
-        self.R1ms = 0
-        self.R2ms = 0
         self.senms = 0
         self.Lon = 0
 
@@ -59,44 +74,24 @@ class Main:
         self.sw5 = self.tools.sw5
         self.sw6 = self.tools.sw6
         self.ST = self.tools.ST
+        self.RTSL = self.tools.RTSL
+        self.RTSR = self.tools.RTSR
 
-#         self.sw1 = Pin(9, Pin.IN, Pin.PULL_UP)# 覆盖设置引脚
-#         self.sw2 = Pin(10, Pin.IN, Pin.PULL_UP)
-#         self.sw3 = Pin(11, Pin.IN, Pin.PULL_UP)
-#         self.sw4 = Pin(12, Pin.IN, Pin.PULL_UP)
-#         self.sw5 = Pin(14, Pin.IN, Pin.PULL_UP)
-#         self.sw6 = Pin(15, Pin.IN, Pin.PULL_UP)
-#         self.ST = Pin(13, Pin.IN, Pin.PULL_UP)
-
-        self.SR1 = RotaryIRQ(#设置旋转编码器
-            pin_num_clk=17, 
-            pin_num_dt=16, 
-            min_val=0, 
-            max_val=2,
-            pull_up=True,
-            half_step=True,
-            range_mode=RotaryIRQ.RANGE_BOUNDED)
-        self.SR2 = RotaryIRQ(
-            pin_num_clk=20, 
-            pin_num_dt=19, 
-            min_val=0, 
-            max_val=2,
-            pull_up=True,
-            half_step=True,
-            range_mode=RotaryIRQ.RANGE_BOUNDED)
         self.SR1.set(value=1)#设置编码器初始值
         self.SR2.set(value=1)
         
         if self.var.boot_mode == 1:#在boot mode 1时加载预设组1
-            self.KD = {'k1':self.keys['m1']['k1'],'k2':self.keys['m1']['k2'],
-                       'k3':self.keys['m1']['k3'],'k4':self.keys['m1']['k4'],
-                       'k5':self.keys['m1']['k5'],'k6':self.keys['m1']['k6'],
-                       'ST':self.keys['m1']['ST']}#初步处理键位设置
+            self.KD = [self.keys['m1']['k1'],self.keys['m1']['k2'],
+                       self.keys['m1']['k3'],self.keys['m1']['k4'],
+                       self.keys['m1']['k5'],self.keys['m1']['k6'],
+                       self.keys['m1']['ST'],self.keys['m1']['RTLS'],
+                       self.keys['m1']['RTRS']]#初步处理键位设置
             
 
     def main(self):
         """主循环"""
         while self._mode_dect():
+            self.nowtime = time.ticks_ms()
             
             self._kmap_dect()    
                 
@@ -105,25 +100,16 @@ class Main:
             self._key_processing()
             self._rotary_processing()
             
-            self._raw_data_processing()
+            #self._raw_data_processing()
+            #self._debugoutput()
 
+            self._press_status_show()
             self._send_data()
 
-            if self.Knms != [0,0,0,0,0,0] :#按键提示灯
-                if time.ticks_diff(time.ticks_ms(), self.senms) >= 25 and self.Lon == 0 :
-                    self.senms = time.ticks_ms()
-                    self.Lon = 1
-                    self.l.on()
-                if time.ticks_diff(time.ticks_ms(), self.senms) >= 25 and self.Lon == 1 :
-                    self.senms = time.ticks_ms()
-                    self.Lon = 0
-                    self.l.off()
-            else:
-                self.l.off()
-
-            self.Knms = []#重置按键数据
-            self.Knm = []
-
+            #重置按键数据
+            self.Knmm = self.Knm[:]
+            self.Knm = [0,0,0,0,0,0]
+            
     def _mode_dect(self):
         """检查处于哪个boot循环"""
         if self.var.boot_mode == 0:
@@ -136,91 +122,121 @@ class Main:
         if self.var.boot_mode == 0:
             mode = (not self.SET_Pin_a.value())*2**0+(not self.SET_Pin_b.value())*2**1
             if mode == 0:
-                self.var.kamp_index = 'm1'
-                self.KD = {'k1':self.keys['m1']['k1'],'k2':self.keys['m1']['k2'],
-                           'k3':self.keys['m1']['k3'],'k4':self.keys['m1']['k4'],
-                           'k5':self.keys['m1']['k5'],'k6':self.keys['m1']['k6'],
-                           'ST':self.keys['m1']['ST']}#加载键位预设1
+                self.var.kmap_index = 'm1'
+                self.KD = [self.keys['m1']['k1'],self.keys['m1']['k2'],
+                           self.keys['m1']['k3'],self.keys['m1']['k4'],
+                           self.keys['m1']['k5'],self.keys['m1']['k6'],
+                           self.keys['m1']['ST'],self.keys['m1']['RTLS'],
+                           self.keys['m1']['RTRS']]#加载键位预设1
             elif mode == 1:
-                self.var.kamp_index = 'm2'
-                self.KD = {'k1':self.keys['m2']['k1'],'k2':self.keys['m2']['k2'],
-                           'k3':self.keys['m2']['k3'],'k4':self.keys['m2']['k4'],
-                           'k5':self.keys['m2']['k5'],'k6':self.keys['m2']['k6'],
-                           'ST':self.keys['m2']['ST']}#加载键位预设2
+                self.var.kmap_index = 'm2'
+                self.KD = [self.keys['m2']['k1'],self.keys['m2']['k2'],
+                           self.keys['m2']['k3'],self.keys['m2']['k4'],
+                           self.keys['m2']['k5'],self.keys['m2']['k6'],
+                           self.keys['m2']['ST'],self.keys['m1']['RTLS'],
+                           self.keys['m2']['RTRS']]#加载键位预设2
             elif mode == 2:
-                self.var.kamp_index = 'm3'
-                self.KD = {'k1':self.keys['m3']['k1'],'k2':self.keys['m3']['k2'],
-                           'k3':self.keys['m3']['k3'],'k4':self.keys['m3']['k4'],
-                           'k5':self.keys['m3']['k5'],'k6':self.keys['m3']['k6'],
-                           'ST':self.keys['m3']['ST']}#加载键位预设3
+                self.var.kmap_index = 'm3'
+                self.KD = [self.keys['m3']['k1'],self.keys['m3']['k2'],
+                           self.keys['m3']['k3'],self.keys['m3']['k4'],
+                           self.keys['m3']['k5'],self.keys['m3']['k6'],
+                           self.keys['m3']['ST'],self.keys['m1']['RTLS'],
+                           self.keys['m3']['RTRS']]#加载键位预设3
             elif mode == 3:
-                self.var.kamp_index = 'm4'
-                self.KD = {'k1':self.keys['m4']['k1'],'k2':self.keys['m4']['k2'],
-                           'k3':self.keys['m4']['k3'],'k4':self.keys['m4']['k4'],
-                           'k5':self.keys['m4']['k5'],'k6':self.keys['m4']['k6'],
-                           'ST':self.keys['m4']['ST']}#加载键位预设4
+                self.var.kmap_index = 'm4'
+                self.KD = [self.keys['m4']['k1'],self.keys['m4']['k2'],
+                           self.keys['m4']['k3'],self.keys['m4']['k4'],
+                           self.keys['m4']['k5'],self.keys['m4']['k6'],
+                           self.keys['m4']['ST'],self.keys['m1']['RTLS'],
+                           self.keys['m4']['RTRS']]#加载键位预设4
         
     def _read_status(self):
         """读取按键/编码器状态"""
-        self.RTv = [self.SR1.value(),self.SR2.value()]#读取编码器状态
+        self.RTv = [self.RT[0][0].value(),self.RT[1][0].value()]#读取编码器状态
         self.KV = [self.sw1.value(),self.sw2.value(),self.sw3.value(),
                    self.sw4.value(),self.sw5.value(),self.sw6.value(),
-                   self.ST.value()]#读取按键状态
+                   self.ST.value(),self.RTSL.value(),self.RTSR.value()]#读取按键状态
     
     def _key_processing(self):
         """处理按键状态"""
-        for q in range(len(self.KV)) :#按键输入处理
-            if self.KV[q] == 0 :
-                if not self.KD[self.Kname[q]] in self.Knm :
-                    self.Knm.append(self.KD[self.Kname[q]])
-                    self.Kms[q] = time.ticks_ms()
-            elif not time.ticks_diff(time.ticks_ms(), self.Kms[q]) >= 5 :#5ms消抖
-                if self.KD[self.Kname[q]] not in self.Knm :
-                    self.Knm.append(self.KD[self.Kname[q]])
+        for i in range(len(self.KV)) :
+            if time.ticks_diff(self.nowtime, self.Kms[i]) > 5:
+                if (not self.KV[i]) != self.Kstatus[i]:
+                    self.Kstatus[i] = not self.KV[i]
+                    self.Kms[i] = self.nowtime
     
     def _rotary_processing(self):
         """处理编码器状态"""
-        if self.RTv[0] != 1 :#编码器输入处理
-            if self.RTv[0] == 0 :
-                self.RL = self.keys[self.var.kamp_index]['SR1L']
-                self.R1ms = time.ticks_ms()
-                self.SR1.set(value=1)
-            elif self.RTv[0] == 2 :
-                self.RL = self.keys[self.var.kamp_index]['SR1R']
-                self.R1ms = time.ticks_ms()
-                self.SR1.set(value=1)
-            self.Knm.append(self.RL)
-            
-        elif not time.ticks_diff(time.ticks_ms(), self.R1ms) >= 75 :#延迟75ms释放编码器按键
-            if not self.RL in self.Knm :
-                self.Knm.append(self.RL)
-                
-        if self.RTv[1] != 1 :
-            if self.RTv[1] == 0 :
-                self.RR = self.keys[self.var.kamp_index]['SR2L']
-                self.R2ms = time.ticks_ms()
-                self.SR2.set(value=1)
-            elif self.RTv[1] == 2 :
-                self.RR = self.keys[self.var.kamp_index]['SR2R']
-                self.R2ms = time.ticks_ms()
-                self.SR2.set(value=1)
-            self.Knm.append(self.RR)
-                
-        elif not time.ticks_diff(time.ticks_ms(), self.R2ms) >= 75 :
-            if not self.RR in self.Knm :
-                self.Knm.append(self.RR)
-    def _raw_data_processing(self):
-        """处理原始按键数据"""
-        for i in self.Knm :#处理按键数据 去除重复键值
-            for s in i:
-                if s not in self.Knms:
-                    self.Knms.append(s)
-        
-        while len(self.Knms) < 6 :#补足按键数据6位长度
-            self.Knms.append(0)
+        for i in range(2):
+            if self.RTv[i] == 0 :
+                self.RT[i][1] = self.keys[self.var.kmap_index][self.RT[i][2][:]]
+                self.Rms[i] = self.nowtime
+                self.RT[i][4] = True
+                self.RT[i][0].set(value=1)
+            elif self.RTv[i] == 1 :
+                self.RT[i][4] = False
+            elif self.RTv[i] == 2 :
+                self.RT[i][1] = self.keys[self.var.kmap_index][self.RT[i][3][:]]
+                self.Rms[i] = self.nowtime
+                self.RT[i][4] = True 
+                self.RT[i][0].set(value=1)
     
+#     def _raw_data_processing(self):
+#         """处理原始按键数据"""
+#         pass
+
+    def _press_status_show(self):
+        """按键提示灯"""
+        if self.Knmm != [0,0,0,0,0,0] :
+            if time.ticks_diff(self.nowtime, self.senms) >= 25 and self.Lon == 0 :
+                self.senms = time.ticks_ms()
+                self.Lon = 1
+                self.l.on()
+            if time.ticks_diff(self.nowtime, self.senms) >= 25 and self.Lon == 1 :
+                self.senms = time.ticks_ms()
+                self.Lon = 0
+                self.l.off()
+        else:
+            self.l.off()
+
     def _send_data(self):
         """发送数据到CH9329"""
-        if self.Knms != self.Kold :#发送按键数据到CH9329
-            self.uart.write(b'\x57\xab\x00\x02\x08\x00\x00'+bytes([self.Knms[0],self.Knms[1],self.Knms[2],self.Knms[3],self.Knms[4],self.Knms[5],(0x57+0xab+0x02+0x08+self.Knms[0]+self.Knms[1]+self.Knms[2]+self.Knms[3]+self.Knms[4]+self.Knms[5])&0xff]))
-            self.Kold = self.Knms
+        for i in range(len(self.Kstatus)):
+            if self.Kstatus[i]:
+                for a in range(len(self.KD[i])):
+                    if self.KD[i]:
+                        for q in range(len(self.Knm)):
+                            if self.Knm[q] == 0 :
+                                self.Knm[q] = self.KD[i][a]
+                                break
+                            
+        for s in range(2):
+            if self.RT[s][4] or self.nowtime - self.Rms[s] <= 75:
+                for i in range(len(self.RT[s][1])):
+                    if self.RT[s][1][i]:
+                        for a in range(len(self.Knm)):
+                            if not self.Knm[a]:
+                                self.Knm[a] = self.RT[s][1][a]
+                                break
+                
+                
+        
+        if self.Knm != self.Knmold:
+            #self._debugoutput()
+            self.uart.write(b'\x57\xab\x00\x02\x08\x00\x00'+bytes([self.Knm[0],self.Knm[1],self.Knm[2],self.Knm[3],self.Knm[4],self.Knm[5],(0x57+0xab+0x02+0x08+self.Knm[0]+self.Knm[1]+self.Knm[2]+self.Knm[3]+self.Knm[4]+self.Knm[5])&0xff]))
+            self.Knmold = self.Knm[:]
+        
+
+    def _debugoutput(self):
+        print('debug output:')
+        print("Kstatus:"+str(self.Kstatus))
+        #print("Ks:"+str(self.Ks))
+        print("Kms:"+str(self.Kms))
+        print("Knm:"+str(self.Knm))
+        print("Knmm:"+str(self.Knmm))
+        print("RT:"+str(self.RT))
+        print("RTv:"+str(self.RTv))
+        #print("RTvo:"+str(self.RTvo))
+        print("Rms:"+str(self.Rms))
+        print("nowtime:"+str(self.nowtime))
+        time.sleep_ms(50)

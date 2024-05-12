@@ -95,18 +95,22 @@ class Settings:
         print('  `k1`  主板上从左往右第一个按键,默认`D`')
         print('  `k2`  主板上从左往右第二个按键,默认`F`')
         print('  `k3`  主板上从左往右第三个按键,默认`J`')
-        print('  `k4`  主板上从左往右第四个按键,默认`K`')
+        print('  `k4`  主板上从左往右第四个按键mode = (not self.SET_Pin_a.value())*2**0+(not self.SET_Pin_b.value())*2**1,默认`K`')
         print('SDVX扩展板按键:')
         print('  `ST`    圆形按键,用作Start键,默认`Space`')
         print('  `k5`    圆形按键左边的按键,默认`V`')
         print('  `k6`    圆形按键右边的按键,默认`N`')
-        print('  `SR1L`  左旋钮逆时针旋转,默认`W`')
-        print('  `SR1R`  左旋钮顺时针旋转,默认`E`')
-        print('  `SR2L`  右旋钮逆时针旋转,默认`O`')
-        print('  `SR2R`  右旋钮顺时针旋转,默认`P`')
+        print('  `RTLL`  左旋钮逆时针旋转,默认`W`')
+        print('  `RTLR`  左旋钮顺时针旋转,默认`E`')
+        print('  `RTLS`  左旋钮按下,默认`NULL`')
+        print('  `RTRL`  右旋钮逆时针旋转,默认`O`')
+        print('  `RTRR`  右旋钮顺时针旋转,默认`P`')
+        print('  `RTRS`  右旋钮按下,默认`NULL`')
         
     def _key_getKeyMap(self):
         """key指令的getKeyMap参数主函数"""
+        print('特殊键码:')
+        print('  `NULL`  "空"按键,设置之后相当于清除键绑定(按键无效)')
         print('以下是所有可用的物理按键对应键名:')
         print('''数字键区\n  对应物理按键  按键名  \n  1/!         1\n  2/@         2\n  3/#         3\n  4/$         4\n  5/%         5\n  6/^         6\n  7/&         7\n  8/*         8\n  9/(         9\n  0/)         0\n字母键区\n  对应物理按键  按键名  \n  Q           Q\n  W           W\n  E           E\n  R           R\n  T           T\n  Y           Y\n  U           U\n  I           I\n  O           O\n  P           P\n  A           A\n  S           S\n  D           D\n  F           F\n  G           G\n  H           H\n  J           J\n  K           K\n  L           L\n  Z           Z\n  X           X\n  C           C\n  V           V\n  B           B\n  N           N\n  M           M\n符号键区\n  对应物理按键  按键名   \n  `/~           `\n  -/_           -\n  =/+           =\n  \\ |           \\\n  ;/:           ;\n  '/"           '\n  ,/<           <\n  ./>           .\n  / ?           /\n  Space         Space \n功能键区\n  对应物理按键  按键名\n  ESC           ESC\n  Enter         Enter\n  BackSpace     BackSpace\n  Tab           Tab\n  CapsLock      CapsLock\n  Left Shift    ShiftL\n  Right Shift   ShiftR\n  Left Ctrl     CtrlL\n  Right Ctrl    CtrlR\n  Left Alt      AltL\n  Right Alt     AltR\n  Left Win      WinL\n  Right Win     WinR\n  Insert        Insert\n  Delete        Delete\n  Home          Home\n  End           End\n  PrintScreen   PrintScreen\n  ScrollLock    ScrollLock\n  Pause         Pause\n  PageUp        PageUp\n  PageDown      PageDown\n  Application   App\n  UpArrow       UpArrow\n  DownArrow     DownArrow\n  LeftArrow     LeftArrow\n  RightArrow    RightArrow\nFunction键区\n  对应物理按键  按键名\n  F1            F1\n  F2            F2\n  F3            F3\n  F4            F4\n  F5            F5\n  F6            F6\n  F7            F7\n  F8            F8\n  F9            F9\n  F10           F10\n  F11           F11\n  F12           F12\n小键盘区\n  对应物理按键  按键名\n  NumLock       NumLock\n  /             n/\n  *             n*\n  -             n-\n  +             n+\n  .             n.\n  Enter         nEnter\n  1             n1\n  2             n2\n  3             n3\n  4             n4\n  5             n5\n  6             n6\n  7             n7\n  8             n8\n  9             n9\n  0             n0''')
 
