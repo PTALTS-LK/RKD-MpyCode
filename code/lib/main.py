@@ -216,7 +216,7 @@ class Main:
                     if self.RT[s][1][i]:
                         for a in range(len(self.Knm)):
                             if not self.Knm[a]:
-                                self.Knm[a] = self.RT[s][1][a]
+                                self.Knm[a] = self.RT[s][1][i]
                                 break
                 
                 
