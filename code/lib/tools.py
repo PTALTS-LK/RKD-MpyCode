@@ -89,8 +89,10 @@ class Tools:
         "ST": ["Space"],
         "RTLL": ["W"],
         "RTLR": ["E"],
+        "RTLS": ["NULL"],
         "RTRL": ["O"],
-        "RTRR": ["P"]
+        "RTRR": ["P"],
+        "RTRS": ["NULL"]
     }
 }"""
         
