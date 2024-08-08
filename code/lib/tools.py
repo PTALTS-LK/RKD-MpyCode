@@ -129,12 +129,47 @@ class Tools:
         except OSError:
             return self.write_defconf()
         else:
+            if "m1" not in data:
+                return self.write_defconf()
+            elif "m2" not in data:
+                return self.write_defconf()
+            elif "m3" not in data:
+                return self.write_defconf()
+            elif "m4" not in data:
+                return self.write_defconf()
             for i in data :
+                if "k1" not in data[i]:
+                    return self.write_defconf()
+                elif "k2" not in data[i]:
+                    return self.write_defconf()
+                elif "k3" not in data[i]:
+                    return self.write_defconf()
+                elif "k4" not in data[i]:
+                    return self.write_defconf()
+                elif "k5" not in data[i]:
+                    return self.write_defconf()
+                elif "k6" not in data[i]:
+                    return self.write_defconf()
+                elif "ST" not in data[i]:
+                    return self.write_defconf()
+                elif "RTLL" not in data[i]:
+                    return self.write_defconf()
+                elif "RTLR" not in data[i]:
+                    return self.write_defconf()
+                elif "RTLS" not in data[i]:
+                    return self.write_defconf()
+                elif "RTRL" not in data[i]:
+                    return self.write_defconf()
+                elif "RTRR" not in data[i]:
+                    return self.write_defconf()
+                elif "RTRS" not in data[i]:
+                    return self.write_defconf()
                 for ii in data[i] :
                     for iii in range(len(data[i][ii])):
                         data[i][ii][iii]=keydict[data[i][ii][iii]]
             file.close()
             return data
+        
     
     def setup(self):
         """初始化CH9329"""
@@ -159,3 +194,4 @@ class Tools:
             suart.write(b'\x57\xab\x00\x0f\x00\x11')
             time.sleep_ms(50)
             print('ch9329 setup finish')
+
